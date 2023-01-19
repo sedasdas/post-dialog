@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"post-dialog/tools"
+	"strconv"
 	"time"
 
 	jsonrpc "github.com/filecoin-project/go-jsonrpc"
@@ -52,10 +53,11 @@ func main() {
 			//fmt.Print(faults.Count())
 			log.Print(maddr.String(), "错误扇区数量为：", count)
 			if count > 1 {
+
 				switch maddr.String() {
 				case "f024972":
 					if f024972 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f024972 = count
 					}
 				case "f029401":
