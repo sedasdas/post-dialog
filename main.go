@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/list"
 	"context"
 	"fmt"
 	"github.com/filecoin-project/go-address"
@@ -35,21 +36,22 @@ func main() {
 		log.Fatal(err)
 	}
 	defer f.Close()
-
+	l := list.New()
+	br := bufio.NewReader(f)
 	for {
-		time.Sleep(10 * time.Second)
-		log.Print("我在定时执行任务")
-		tipset, err := api.ChainHead(context.Background())
-		if err != nil {
-			log.Fatalf("calling chain head: %s", err)
+		a, _, c := br.ReadLine()
+		l.PushBack(a)
+		if c == io.EOF {
+			break
 		}
-
-		br := bufio.NewReader(f)
 		for {
-			a, _, c := br.ReadLine()
-			if c == io.EOF {
-				break
+			time.Sleep(10 * time.Second)
+			log.Print("我在定时执行任务")
+			tipset, err := api.ChainHead(context.Background())
+			if err != nil {
+				log.Fatalf("calling chain head: %s", err)
 			}
+
 			log.Print(tipset.Height())
 			maddr, _ := address.NewFromString(string(a))
 			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
@@ -57,6 +59,7 @@ func main() {
 			//fmt.Printf("Current chain head is: %s", tipset.String())
 			//fmt.Print(faults.Count())
 			log.Print(maddr.String(), "错误扇区数量为：", count)
+
 		}
 	}
 
