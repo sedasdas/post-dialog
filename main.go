@@ -62,7 +62,7 @@ func main() {
 			}
 		}
 	}(ticker1)
-	time.Sleep(30 * time.Second)
+	//time.Sleep(3000 * time.Second)
 	fmt.Println("ok")
 
 }
