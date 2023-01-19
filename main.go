@@ -2,12 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/filecoin-project/go-address"
 	"log"
 	"net/http"
-	"os"
 	"post-dialog/tools"
-	"strconv"
 	"time"
 
 	jsonrpc "github.com/filecoin-project/go-jsonrpc"
@@ -15,7 +12,7 @@ import (
 )
 
 func main() {
-	var f024972, f029401, f033123, f042540, f042558, f01785096, f01867066 uint64
+
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := "10.0.1.93:9999"
@@ -29,74 +26,17 @@ func main() {
 
 	// Now you can call any API you're interested in.
 
-	f, err := os.OpenFile("/home/lotus/miner-list", os.O_RDWR|os.O_RDONLY, 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
 	//l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
 	for {
-
 		time.Sleep(3 * time.Second)
-		list := tools.ReadFromConfig("/home/lotus/miner-list")
-		log.Print(tools.ReadFromConfig("/home/lotus/miner-list"))
 		tipset, err := api.ChainHead(context.Background())
 		if err != nil {
 			log.Fatalf("calling chain head: %s", err)
 		}
-		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
 		log.Print(tipset.Height())
-		for _, k := range list {
-			maddr, _ := address.NewFromString(string(k))
-			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
-			count, _ := faults.Count()
-			//fmt.Printf("Current chain head is: %s", tipset.String())
-			//fmt.Print(faults.Count())
-			log.Print(maddr.String(), "错误扇区数量为：", count)
-			if count > 10 {
+		tools.CheckPower(context.Background(), "/home/lotus/miner-list", api, tipset.Key())
+		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
 
-				switch maddr.String() {
-				case "f024972":
-					if f024972 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f024972 = count
-					}
-				case "f029401":
-					if f029401 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f029401 = count
-					}
-				case "f033123":
-					if f033123 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f033123 = count
-					}
-				case "f042540":
-					if f042540 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f042540 = count
-					}
-				case "f042558":
-					if f042558 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f042558 = count
-					}
-				case "f01785096":
-					if f01785096 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f01785096 = count
-					}
-				case "f01867066":
-					if f01867066 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-						f01867066 = count
-					}
-
-				}
-			}
-
-		}
 	}
 
 }
