@@ -28,7 +28,7 @@ func main() {
 
 	//l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
 	for {
-		time.Sleep(3 * time.Second)
+		time.Sleep(30 * time.Second)
 		tipset, err := api.ChainHead(context.Background())
 		if err != nil {
 			log.Fatalf("calling chain head: %s", err)
