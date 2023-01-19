@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	tools.SendEm()
+
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := "10.0.1.93:9999"
@@ -51,6 +51,9 @@ func main() {
 			//fmt.Printf("Current chain head is: %s", tipset.String())
 			//fmt.Print(faults.Count())
 			log.Print(maddr.String(), "错误扇区数量为：", count)
+			if count > 100 {
+				tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+			}
 
 		}
 	}
