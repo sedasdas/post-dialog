@@ -44,16 +44,20 @@ func main() {
 		if c == io.EOF {
 			break
 		}
-		for {
-			time.Sleep(10 * time.Second)
-			log.Print("我在定时执行任务")
-			tipset, err := api.ChainHead(context.Background())
-			if err != nil {
-				log.Fatalf("calling chain head: %s", err)
-			}
+	}
+	for {
+		time.Sleep(10 * time.Second)
+		log.Print("我在定时执行任务")
+		tipset, err := api.ChainHead(context.Background())
+		if err != nil {
+			log.Fatalf("calling chain head: %s", err)
+		}
 
-			log.Print(tipset.Height())
-			maddr, _ := address.NewFromString(string(a))
+		log.Print(tipset.Height())
+		for i := l.Front(); i != nil; i = i.Next() {
+			fmt.Println(i.Value)
+			ma := i.Value
+			maddr, _ := address.NewFromString(ma.(string))
 			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
 			count, _ := faults.Count()
 			//fmt.Printf("Current chain head is: %s", tipset.String())
