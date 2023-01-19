@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"github.com/filecoin-project/go-address"
+	"io"
 	"log"
 	"net/http"
+	"os"
 
 	jsonrpc "github.com/filecoin-project/go-jsonrpc"
 	lotusapi "github.com/filecoin-project/lotus/api"
@@ -27,11 +30,23 @@ func main() {
 	if err != nil {
 		log.Fatalf("calling chain head: %s", err)
 	}
-	maddr, _ := address.NewFromString("f01785096")
+	f, err := os.OpenFile("/home/lotus/miner-list", os.O_RDWR|os.O_RDONLY, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	br := bufio.NewReader(f)
+	for {
+		a, _, c := br.ReadLine()
+		if c == io.EOF {
+			break
+		}
+		maddr, _ := address.NewFromString(string(a))
+		faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
+		count, _ := faults.Count()
+		//fmt.Printf("Current chain head is: %s", tipset.String())
+		//fmt.Print(faults.Count())
+		log.Print(maddr.String(), "错误扇区数量为：", count)
+	}
 
-	faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
-	count, _ := faults.Count()
-	//fmt.Printf("Current chain head is: %s", tipset.String())
-	//fmt.Print(faults.Count())
-	log.Print(maddr.String(), count)
 }
