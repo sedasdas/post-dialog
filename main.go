@@ -35,34 +35,26 @@ func main() {
 	}
 	defer f.Close()
 
-	ticker1 := time.NewTicker(5 * time.Second)
-	// 一定要调用Stop()，回收资源
-	defer ticker1.Stop()
-	go func(t *time.Ticker) {
-		for {
-			// 每5秒中从chan t.C 中读取一次
-			<-t.C
-			fmt.Println("Ticker:", time.Now().Format("2006-01-02 15:04:05"))
-			tipset, err := api.ChainHead(context.Background())
-			if err != nil {
-				log.Fatalf("calling chain head: %s", err)
-			}
-			br := bufio.NewReader(f)
-			for {
-				a, _, c := br.ReadLine()
-				if c == io.EOF {
-					break
-				}
-				maddr, _ := address.NewFromString(string(a))
-				faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
-				count, _ := faults.Count()
-				//fmt.Printf("Current chain head is: %s", tipset.String())
-				//fmt.Print(faults.Count())
-				log.Print(maddr.String(), "错误扇区数量为：", count)
-			}
+	for {
+		time.Sleep(10 * time.Second)
+		fmt.Println("我在定时执行任务")
+		tipset, err := api.ChainHead(context.Background())
+		if err != nil {
+			log.Fatalf("calling chain head: %s", err)
 		}
-	}(ticker1)
-	//time.Sleep(3000 * time.Second)
-	fmt.Println("ok")
+		br := bufio.NewReader(f)
+		for {
+			a, _, c := br.ReadLine()
+			if c == io.EOF {
+				break
+			}
+			maddr, _ := address.NewFromString(string(a))
+			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
+			count, _ := faults.Count()
+			//fmt.Printf("Current chain head is: %s", tipset.String())
+			//fmt.Print(faults.Count())
+			log.Print(maddr.String(), "错误扇区数量为：", count)
+		}
+	}
 
 }
