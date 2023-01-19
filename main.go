@@ -43,12 +43,14 @@ func main() {
 		if err != nil {
 			log.Fatalf("calling chain head: %s", err)
 		}
+
 		br := bufio.NewReader(f)
 		for {
 			a, _, c := br.ReadLine()
 			if c == io.EOF {
 				break
 			}
+			log.Print(tipset.Height())
 			maddr, _ := address.NewFromString(string(a))
 			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
 			count, _ := faults.Count()
