@@ -12,7 +12,8 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 	for _, k := range walletlist {
 		add, _ := address.NewFromString(k)
 		balance, _ := api.WalletBalance(ctx, add)
-		log.Print(balance)
+		log.Print(balance.String())
+
 	}
 
 }
