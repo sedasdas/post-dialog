@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/filecoin-project/go-address"
 	"log"
 	"net/http"
 	"os"
+	"post-dialog/tools"
 	"time"
 
 	jsonrpc "github.com/filecoin-project/go-jsonrpc"
@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	fmt.Print()
+	tools.SendEm()
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := "10.0.1.93:9999"

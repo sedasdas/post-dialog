@@ -3,8 +3,10 @@ module post-dialog
 go 1.19
 
 require (
+	github.com/filecoin-project/go-address v1.1.0
 	github.com/filecoin-project/go-jsonrpc v0.1.9
 	github.com/filecoin-project/lotus v1.19.0
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 )
 
 require (
@@ -18,7 +20,6 @@ require (
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
 	github.com/daaku/go.zipexe v1.0.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
-	github.com/filecoin-project/go-address v1.1.0 // indirect
 	github.com/filecoin-project/go-amt-ipld/v2 v2.1.0 // indirect
 	github.com/filecoin-project/go-amt-ipld/v3 v3.1.0 // indirect
 	github.com/filecoin-project/go-amt-ipld/v4 v4.0.0 // indirect
