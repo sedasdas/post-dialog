@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/filecoin-project/go-address"
 	"log"
 	"net/http"
@@ -31,6 +30,8 @@ func main() {
 	maddr, _ := address.NewFromString("f01785096")
 
 	faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
-	fmt.Printf("Current chain head is: %s", tipset.String())
-	fmt.Print(faults.Count())
+	count, _ := faults.Count()
+	//fmt.Printf("Current chain head is: %s", tipset.String())
+	//fmt.Print(faults.Count())
+	log.Print(maddr.String(), count)
 }
