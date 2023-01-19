@@ -35,7 +35,7 @@ func main() {
 	}
 	defer f.Close()
 
-	l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
+	//l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
 	for {
 		time.Sleep(3 * time.Second)
 		list := tools.ReadFromConfig("/home/lotus/miner-list")
