@@ -38,7 +38,7 @@ func main() {
 	l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
 	for {
 		time.Sleep(3 * time.Second)
-		tools.ReadFromConfig("/home/lotus/miner-list")
+		list := tools.ReadFromConfig("/home/lotus/miner-list")
 		log.Print(tools.ReadFromConfig("/home/lotus/miner-list"))
 		tipset, err := api.ChainHead(context.Background())
 		if err != nil {
@@ -46,14 +46,14 @@ func main() {
 		}
 
 		log.Print(tipset.Height())
-		for _, k := range l {
+		for _, k := range list {
 			maddr, _ := address.NewFromString(string(k))
 			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
 			count, _ := faults.Count()
 			//fmt.Printf("Current chain head is: %s", tipset.String())
 			//fmt.Print(faults.Count())
 			log.Print(maddr.String(), "错误扇区数量为：", count)
-			if count > 1 {
+			if count > 10 {
 
 				switch maddr.String() {
 				case "f024972":
