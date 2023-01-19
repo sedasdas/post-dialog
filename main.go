@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-
+	var f024972, f029401, f033123, f042540, f042558, f01785096, f01867066 uint64
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := "10.0.1.93:9999"
@@ -52,7 +52,44 @@ func main() {
 			//fmt.Print(faults.Count())
 			log.Print(maddr.String(), "错误扇区数量为：", count)
 			if count > 100 {
-				tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+				switch maddr.String() {
+				case "f024972":
+					if f024972 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f024972 = count
+					}
+				case "f029401":
+					if f029401 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f029401 = count
+					}
+				case "f033123":
+					if f033123 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f033123 = count
+					}
+				case "f042540":
+					if f042540 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f042540 = count
+					}
+				case "f042558":
+					if f042558 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f042558 = count
+					}
+				case "f01785096":
+					if f01785096 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f01785096 = count
+					}
+				case "f01867066":
+					if f01867066 < count {
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						f01867066 = count
+					}
+
+				}
 			}
 
 		}
