@@ -3,7 +3,6 @@ package post
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"github.com/filecoin-project/go-address"
 	"io"
 	"log"
@@ -18,7 +17,7 @@ import (
 func main() {
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
-	addr := "0.0.0.0:9999"
+	addr := "10.0.1.93:9999"
 
 	var api lotusapi.FullNodeStruct
 	closer, err := jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
@@ -37,7 +36,7 @@ func main() {
 
 	for {
 		time.Sleep(10 * time.Second)
-		fmt.Println("我在定时执行任务")
+		log.Print("我在定时执行任务")
 		tipset, err := api.ChainHead(context.Background())
 		if err != nil {
 			log.Fatalf("calling chain head: %s", err)
