@@ -1,10 +1,8 @@
 package post
 
 import (
-	"bufio"
 	"context"
-	"github.com/filecoin-project/go-address"
-	"io"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Print()
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := "10.0.1.93:9999"
@@ -37,23 +36,11 @@ func main() {
 	for {
 		time.Sleep(10 * time.Second)
 		log.Print("我在定时执行任务")
-		tipset, err := api.ChainHead(context.Background())
+		//tipset, err := api.ChainHead(context.Background())
 		if err != nil {
 			log.Fatalf("calling chain head: %s", err)
 		}
-		br := bufio.NewReader(f)
-		for {
-			a, _, c := br.ReadLine()
-			if c == io.EOF {
-				break
-			}
-			maddr, _ := address.NewFromString(string(a))
-			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
-			count, _ := faults.Count()
-			//fmt.Printf("Current chain head is: %s", tipset.String())
-			//fmt.Print(faults.Count())
-			log.Print(maddr.String(), "错误扇区数量为：", count)
-		}
+
 	}
 
 }
