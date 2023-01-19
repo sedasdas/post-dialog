@@ -36,7 +36,7 @@ func main() {
 
 	l := []string{"f024972"}
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(3 * time.Second)
 		log.Print("我在定时执行任务")
 		tipset, err := api.ChainHead(context.Background())
 		if err != nil {
@@ -44,8 +44,8 @@ func main() {
 		}
 
 		log.Print(tipset.Height())
-		for i, _ := range l {
-			maddr, _ := address.NewFromString(string(i))
+		for _, k := range l {
+			maddr, _ := address.NewFromString(string(k))
 			faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset.Key())
 			count, _ := faults.Count()
 			//fmt.Printf("Current chain head is: %s", tipset.String())
