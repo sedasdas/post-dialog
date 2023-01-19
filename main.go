@@ -51,7 +51,7 @@ func main() {
 			//fmt.Printf("Current chain head is: %s", tipset.String())
 			//fmt.Print(faults.Count())
 			log.Print(maddr.String(), "错误扇区数量为：", count)
-			if count > 100 {
+			if count > 1 {
 				switch maddr.String() {
 				case "f024972":
 					if f024972 < count {
