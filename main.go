@@ -62,32 +62,32 @@ func main() {
 					}
 				case "f029401":
 					if f029401 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f029401 = count
 					}
 				case "f033123":
 					if f033123 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f033123 = count
 					}
 				case "f042540":
 					if f042540 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f042540 = count
 					}
 				case "f042558":
 					if f042558 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f042558 = count
 					}
 				case "f01785096":
 					if f01785096 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f01785096 = count
 					}
 				case "f01867066":
 					if f01867066 < count {
-						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+string(count)))
+						tools.SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 						f01867066 = count
 					}
 
