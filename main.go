@@ -37,6 +37,7 @@ func main() {
 
 	//l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
 	for {
+
 		time.Sleep(3 * time.Second)
 		list := tools.ReadFromConfig("/home/lotus/miner-list")
 		log.Print(tools.ReadFromConfig("/home/lotus/miner-list"))
@@ -44,7 +45,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("calling chain head: %s", err)
 		}
-
+		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
 		log.Print(tipset.Height())
 		for _, k := range list {
 			maddr, _ := address.NewFromString(string(k))
