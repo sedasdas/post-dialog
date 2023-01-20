@@ -1,11 +1,14 @@
 package tools
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"github.com/filecoin-project/go-address"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"log"
 	"math/big"
+	"net/http"
 )
 
 func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNodeStruct) {
@@ -23,6 +26,12 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 		} else {
 			//SendEm("钱包余额不足", []byte("钱包"+add.String()+"的余额为"+balanceFIL.Int64))
 			SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
+			message := fmt.Sprintf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
+			resp, err := http.Post("https://oapi.dingtalk.com/robot/send?access_token=your_token", "application/json", bytes.NewBuffer([]byte(`{"msgtype": "text", "text": {"content": "`+message+`"}}`)))
+			if err != nil {
+				log.Printf("发送消息失败：%s", err)
+			}
+			defer resp.Body.Close()
 		}
 
 	}
