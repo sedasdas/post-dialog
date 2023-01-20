@@ -16,7 +16,8 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 		n, _ := strconv.ParseInt(balance.String(), 10, 64)
 		// 将数字转换成字符串，并保留小数点后一位
 		result := strconv.FormatFloat(float64(n)/1e18, 'f', 1, 64)
-		log.Print(result)
+		log.Printf("钱包 %s 的余额为 %s", add, result)
+
 	}
 
 }
