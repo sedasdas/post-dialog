@@ -13,11 +13,10 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 	for _, k := range walletlist {
 		add, _ := address.NewFromString(k)
 		balance, _ := api.WalletBalance(ctx, add)
-		mfilFloat, _ := new(big.Float).SetString(balance.String())
-		filFloat := new(big.Float).Mul(mfilFloat, big.NewFloat(1000))
-
-		filString, _ := filFloat.Float64()
-		log.Printf("钱包 %s 的余额为 %s", add, filString)
+		balanceFIL := new(big.Int)
+		balanceFIL.SetString(balance.String(), 10)
+		balanceFIL.Div(balanceFIL, big.NewInt(1e18))
+		log.Printf("钱包 %s 的余额为 %s FIL", add, balanceFIL)
 
 	}
 
