@@ -16,10 +16,10 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 		balanceFIL := new(big.Int)
 		balanceFIL.SetString(balance.String(), 10)
 		balanceFIL.Div(balanceFIL, big.NewInt(1e18))
-		log.Printf("钱包 %s 的余额为 %s FIL", add, balanceFIL)
+
 		// check if balance is less than 15
 		if balanceFIL.Int64() >= 15.0 {
-			log.Printf("钱包 %s 的余额为 %s", add, balanceFIL)
+			log.Printf("钱包 %s 的余额为 %s FIL", add, balanceFIL)
 		} else {
 			//SendEm("钱包余额不足", []byte("钱包"+add.String()+"的余额为"+balanceFIL.Int64))
 			SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
