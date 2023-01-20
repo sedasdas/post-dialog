@@ -9,59 +9,27 @@ import (
 	"strconv"
 )
 
-var f024972, f029401, f033123, f042540, f042558, f01785096, f01867066 uint64
+type Miner struct {
+	Address    address.Address
+	FaultCount uint64
+	LastCount  uint64
+}
 
 func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruct, tipset types.TipSetKey) {
-
 	minerlist := ReadFromConfig(filename)
-	for _, k := range minerlist {
+	miners := make([]*Miner, len(minerlist))
+	for i, k := range minerlist {
 		maddr, _ := address.NewFromString(string(k))
-		faults, _ := api.StateMinerFaults(context.Background(), maddr, tipset)
+		miners[i] = &Miner{Address: maddr}
+	}
+	for _, miner := range miners {
+		faults, _ := api.StateMinerFaults(context.Background(), miner.Address, tipset)
 		count, _ := faults.Count()
-		//fmt.Printf("Current chain head is: %s", tipset.String())
-		//fmt.Print(faults.Count())
-		log.Print(maddr.String(), "错误扇区数量为：", count)
-		if count > 10 {
-
-			switch maddr.String() {
-			case "f024972":
-				if f024972 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f024972 = count
-				}
-			case "f029401":
-				if f029401 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f029401 = count
-				}
-			case "f033123":
-				if f033123 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f033123 = count
-				}
-			case "f042540":
-				if f042540 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f042540 = count
-				}
-			case "f042558":
-				if f042558 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f042558 = count
-				}
-			case "f01785096":
-				if f01785096 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f01785096 = count
-				}
-			case "f01867066":
-				if f01867066 < count {
-					SendEm(maddr.String(), []byte(maddr.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-					f01867066 = count
-				}
-
-			}
+		log.Print(miner.Address.String(), "错误扇区数量为：", count)
+		miner.FaultCount = count
+		if miner.FaultCount > 10 && miner.FaultCount > miner.LastCount {
+			SendEm(miner.Address.String(), []byte(miner.Address.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
+			miner.LastCount = miner.FaultCount
 		}
-
 	}
 }

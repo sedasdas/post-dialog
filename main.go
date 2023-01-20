@@ -16,6 +16,7 @@ func main() {
 	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := "10.0.1.93:9999"
+	//var minerapi lotusapi.StorageMiner
 
 	var api lotusapi.FullNodeStruct
 	closer, err := jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
