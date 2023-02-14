@@ -15,18 +15,30 @@ type Miner struct {
 	LastCount  uint64
 }
 
-func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruct, tipset types.TipSetKey) {
+var miners []*Miner
+
+func initMiners(filename string) {
 	minerlist := ReadFromConfig(filename)
-	miners := make([]*Miner, len(minerlist))
+	miners = make([]*Miner, len(minerlist))
 	for i, k := range minerlist {
 		maddr, _ := address.NewFromString(string(k))
 		miners[i] = &Miner{Address: maddr}
 	}
+}
+
+func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruct, tipset types.TipSetKey) {
+	if miners == nil {
+		initMiners(filename)
+	}
+
 	for _, miner := range miners {
 		faults, _ := api.StateMinerFaults(context.Background(), miner.Address, tipset)
 		count, _ := faults.Count()
 		log.Print(miner.Address.String(), "错误扇区数量为：", count)
-		miner.FaultCount = count
+		if count > miner.FaultCount {
+			miner.FaultCount = count
+			miner.LastCount = count - 1
+		}
 		if miner.FaultCount > 10 && miner.FaultCount > miner.LastCount {
 			SendEm(miner.Address.String(), []byte(miner.Address.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
 			miner.LastCount = miner.FaultCount
