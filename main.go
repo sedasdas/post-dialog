@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"post-dialog/tools"
 	"time"
 
@@ -13,9 +14,9 @@ import (
 
 func main() {
 
-	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
+	authToken := os.Getenv("TOKEN")
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
-	addr := "10.0.1.93:9999"
+	addr := os.Getenv("ADDR")
 	//var minerapi lotusapi.StorageMiner
 
 	var api lotusapi.FullNodeStruct
