@@ -37,6 +37,7 @@ func main() {
 		log.Print(tipset.Height())
 		tools.CheckPower(context.Background(), "/home/lotus/miner-list", api, tipset.Key())
 		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
+		tools.CheckNet()
 
 	}
 
