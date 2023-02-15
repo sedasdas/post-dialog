@@ -1,15 +1,14 @@
 package tools
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"github.com/filecoin-project/go-address"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"log"
 	"math/big"
-	"net/http"
 )
+
+var wallets = make(map[address.Address]*big.Int)
 
 func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNodeStruct) {
 	walletlist := ReadFromConfig(filename)
@@ -19,21 +18,22 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 		balanceFIL := new(big.Int)
 		balanceFIL.SetString(balance.String(), 10)
 		balanceFIL.Div(balanceFIL, big.NewInt(1e18))
-
-		// check if balance is less than 15
-		if balanceFIL.Int64() >= 15.0 {
+		// check if balance is less than 15 FIL
+		if balanceFIL.Cmp(big.NewInt(15)) >= 0 {
 			log.Printf("钱包 %s 的余额为 %s FIL", add, balanceFIL)
+			wallets[add] = balanceFIL
 		} else {
-			//SendEm("钱包余额不足", []byte("钱包"+add.String()+"的余额为"+balanceFIL.Int64))
-			SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
-			message := fmt.Sprintf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
-			resp, err := http.Post("https://oapi.dingtalk.com/robot/send?access_token=your_token", "application/json", bytes.NewBuffer([]byte(`{"msgtype": "text", "text": {"content": "`+message+`"}}`)))
-			if err != nil {
-				log.Printf("发送消息失败：%s", err)
+			if prevBalance, ok := wallets[add]; ok {
+				if balanceFIL.Cmp(prevBalance) < 0 {
+					wallets[add] = balanceFIL
+					SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
+					log.Printf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
+				}
+			} else {
+				wallets[add] = balanceFIL
+				SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
+				log.Printf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
 			}
-			defer resp.Body.Close()
 		}
-
 	}
-
 }
