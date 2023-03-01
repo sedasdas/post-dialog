@@ -12,7 +12,8 @@ func SendEm(zhuti string, data []byte) {
 	//设置发送方的邮箱
 	e.From = "1820029262@qq.com"
 	// 设置接收方的邮箱
-	e.To = []string{"1820029262@qq.com", "2647565400@qq.com"}
+	e.To = []string{"1820029262@qq.com", "2647565400@qq.com", "lgxiang410@163.com"}
+
 	//设置主题
 	e.Subject = zhuti
 	//设置文件发送的内容
