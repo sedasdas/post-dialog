@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"post-dialog/tools"
 	"time"
 
@@ -12,33 +13,68 @@ import (
 )
 
 func main() {
-
-	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
+	authToken := os.Getenv("TOKEN")
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
-	addr := "127.0.0.1:9999"
+	addr := os.Getenv("ADDR")
+
+	//var minerapi lotusapi.StorageMiner
 
 	var api lotusapi.FullNodeStruct
-	closer, err := jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
+
+	// 连接 Lotus API
+	var closer jsonrpc.ClientCloser
+	var err error
+	for i := 0; i < 10; i++ {
+		closer, err = jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
+		if err == nil {
+			log.Printf("connected to lotus successfully")
+			break
+		}
+		log.Printf("connecting with lotus failed: %s, retrying in 5 seconds...", err)
+		time.Sleep(5 * time.Second)
+	}
+
 	if err != nil {
-		log.Fatalf("connecting with lotus failed: %s", err)
+		log.Fatalf("failed to connect to lotus: %s", err)
 	}
 	defer closer()
 
-	// Now you can call any API you're interested in.
-
-	//l := []string{"f024972", "f029401", "f033123", "f042540", "f042558", "f01785096", "f01867066"}
+	// 等待 Lotus API 正常启动
 	for {
-		time.Sleep(30 * time.Second)
+		tipset, err := api.ChainHead(context.Background())
+		if err == nil {
+			log.Printf("chain head: %d", tipset.Height())
+			break
+		}
+		log.Printf("calling chain head: %s, waiting for Lotus to start...", err)
+		time.Sleep(5 * time.Second)
+	}
+
+	// 使用 Lotus API
+	for {
 		tipset, err := api.ChainHead(context.Background())
 		if err != nil {
-			log.Fatalf("calling chain head: %s", err)
+			log.Printf("calling chain head: %s", err)
+			closer()
+			for i := 0; i < 10; i++ {
+				closer, err = jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
+				if err == nil {
+					log.Printf("reconnected to lotus successfully")
+					break
+				}
+				log.Printf("reconnecting with lotus failed: %s, retrying in 5 seconds...", err)
+				time.Sleep(5 * time.Second)
+			}
+			if err != nil {
+				log.Fatalf("failed to reconnect to lotus: %s", err)
+			}
+			continue
 		}
-		log.Print(tipset.Height())
+		log.Printf("chain head: %d", tipset.Height())
 		tools.CheckPower(context.Background(), "/home/lotus/miner-list", api, tipset.Key())
 		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
 		tools.CheckNet()
+		// 在这里使用 Lotus API
 		time.Sleep(30 * time.Second)
-
 	}
-
 }
