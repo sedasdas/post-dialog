@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"post-dialog/tools"
 	"time"
 
@@ -14,10 +13,9 @@ import (
 
 func main() {
 
-	authToken := os.Getenv("TOKEN")
+	authToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.4tDmJiysQVzdMgpu70bvQHh1poD3pAv30MQsdW770fQ"
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
-	addr := os.Getenv("ADDR")
-	//var minerapi lotusapi.StorageMiner
+	addr := "127.0.0.1:9999"
 
 	var api lotusapi.FullNodeStruct
 	closer, err := jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
