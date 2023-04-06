@@ -27,12 +27,12 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 			if prevBalance, ok := wallets[add]; ok {
 				if balanceFIL.Cmp(prevBalance) < 0 {
 					wallets[add] = balanceFIL
-					SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
+					SendEm("余额不足", []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
 					log.Printf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
 				}
 			} else {
 				wallets[add] = balanceFIL
-				SendEm(add.String(), []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
+				SendEm("余额不足", []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
 				log.Printf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
 			}
 		}

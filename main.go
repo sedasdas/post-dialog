@@ -37,6 +37,7 @@ func main() {
 		tools.CheckPower(context.Background(), "/home/lotus/miner-list", api, tipset.Key())
 		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
 		tools.CheckNet()
+		time.Sleep(30 * time.Second)
 
 	}
 
