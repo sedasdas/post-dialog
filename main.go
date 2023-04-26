@@ -24,7 +24,7 @@ func main() {
 	// 连接 Lotus API
 	var closer jsonrpc.ClientCloser
 	var err error
-	for i := 0; i < 10; i++ {
+	for {
 		closer, err = jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
 		if err == nil {
 			log.Printf("connected to lotus successfully")
@@ -34,9 +34,6 @@ func main() {
 		time.Sleep(5 * time.Second)
 	}
 
-	if err != nil {
-		log.Fatalf("failed to connect to lotus: %s", err)
-	}
 	defer closer()
 
 	// 等待 Lotus API 正常启动
@@ -56,7 +53,7 @@ func main() {
 		if err != nil {
 			log.Printf("calling chain head: %s", err)
 			closer()
-			for i := 0; i < 10; i++ {
+			for {
 				closer, err = jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
 				if err == nil {
 					log.Printf("reconnected to lotus successfully")
@@ -65,10 +62,6 @@ func main() {
 				log.Printf("reconnecting with lotus failed: %s, retrying in 5 seconds...", err)
 				time.Sleep(5 * time.Second)
 			}
-			if err != nil {
-				log.Fatalf("failed to reconnect to lotus: %s", err)
-			}
-			continue
 		}
 		log.Printf("chain head: %d", tipset.Height())
 		tools.CheckPower(context.Background(), "/home/lotus/miner-list", api, tipset.Key())
