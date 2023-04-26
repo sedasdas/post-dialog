@@ -36,17 +36,6 @@ func main() {
 
 	defer closer()
 
-	// 等待 Lotus API 正常启动
-	for {
-		tipset, err := api.ChainHead(context.Background())
-		if err == nil {
-			log.Printf("chain head: %d", tipset.Height())
-			break
-		}
-		log.Printf("calling chain head: %s, waiting for Lotus to start...", err)
-		time.Sleep(5 * time.Second)
-	}
-
 	// 使用 Lotus API
 	for {
 		tipset, err := api.ChainHead(context.Background())
