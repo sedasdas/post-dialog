@@ -47,12 +47,13 @@ func main() {
 				closer, err = jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
 				if err == nil {
 					log.Printf("reconnected to lotus successfully")
-					tipset, err = api.ChainHead(context.Background())
+
 					break
 				}
 				log.Printf("reconnecting with lotus failed: %s, retrying in 5 seconds...", err)
 				time.Sleep(5 * time.Second)
 			}
+			continue
 		}
 		log.Printf("chain head: %d", tipset.Height())
 		tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
