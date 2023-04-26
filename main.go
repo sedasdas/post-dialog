@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	home := os.Getenv("HOME")
 	authToken := os.Getenv("TOKEN")
 	headers := http.Header{"Authorization": []string{"Bearer " + authToken}}
 	addr := os.Getenv("ADDR")
@@ -53,8 +54,8 @@ func main() {
 			}
 		}
 		log.Printf("chain head: %d", tipset.Height())
-		tools.CheckPower(context.Background(), "/home/lotus/miner-list", api, tipset.Key())
-		tools.GetWalletBalance(context.Background(), "/home/lotus/wallet-list", api)
+		tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
+		tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
 		tools.CheckNet()
 		// 在这里使用 Lotus API
 		time.Sleep(30 * time.Second)
