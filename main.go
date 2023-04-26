@@ -47,6 +47,7 @@ func main() {
 				closer, err = jsonrpc.NewMergeClient(context.Background(), "ws://"+addr+"/rpc/v0", "Filecoin", []interface{}{&api.Internal, &api.CommonStruct.Internal}, headers)
 				if err == nil {
 					log.Printf("reconnected to lotus successfully")
+					tipset, err = api.ChainHead(context.Background())
 					break
 				}
 				log.Printf("reconnecting with lotus failed: %s, retrying in 5 seconds...", err)
