@@ -9,6 +9,7 @@ import (
 )
 
 var wallets = make(map[address.Address]*big.Int)
+var notificationsSent = make(map[address.Address]bool)
 
 func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNodeStruct) {
 	walletlist := ReadFromConfig(filename)
@@ -18,23 +19,17 @@ func GetWalletBalance(ctx context.Context, filename string, api lotusapi.FullNod
 		balanceFIL := new(big.Int)
 		balanceFIL.SetString(balance.String(), 10)
 		balanceFIL.Div(balanceFIL, big.NewInt(1e18))
-		wallets[add] = balanceFIL
 
-		// check if balance is less than 15 FIL
-		if balanceFIL.Cmp(big.NewInt(15)) >= 0 {
-			log.Printf("钱包 %s 的余额为 %s FIL", add, balanceFIL)
-		} else {
-			if prevBalance, ok := wallets[add]; ok {
-				if balanceFIL.Cmp(prevBalance) < 0 {
-					wallets[add] = balanceFIL
-					SendEm("余额不足", []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
-					log.Printf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
-				}
-			} else {
-				wallets[add] = balanceFIL
-				SendEm("余额不足", []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
-				log.Printf("钱包 %s 的余额为 %s FIL，不足 15 FIL", add, balanceFIL)
-			}
+		// 打印余额
+		log.Printf("钱包 %s 的余额为 %s FIL", add, balanceFIL)
+
+		// 检查余额是否低于15 FIL，并且未发送过通知
+		if balanceFIL.Cmp(big.NewInt(15)) < 0 && !notificationsSent[add] {
+			SendEm("余额不足", []byte(add.String()+"的余额为"+balanceFIL.String()+"FIL"))
+			notificationsSent[add] = true
+		} else if balanceFIL.Cmp(big.NewInt(15)) >= 0 {
+			// 如果余额大于等于15 FIL，重置通知标志
+			notificationsSent[add] = false
 		}
 	}
 }
