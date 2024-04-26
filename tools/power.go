@@ -37,7 +37,6 @@ func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruc
 		log.Print(miner.Address.String(), "错误扇区数量为：", count)
 		if count > miner.FaultCount {
 			miner.FaultCount = count
-			miner.LastCount = count - 1
 		}
 		if miner.FaultCount > 10 && miner.FaultCount > miner.LastCount {
 			SendEm(miner.Address.String(), []byte(miner.Address.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
