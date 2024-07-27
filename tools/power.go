@@ -10,9 +10,9 @@ import (
 )
 
 type Miner struct {
-	Address    address.Address
-	FaultCount uint64
-	LastCount  uint64
+	Address        address.Address
+	FaultCount     uint64
+	LastAlertCount uint64
 }
 
 var miners []*Miner
@@ -35,12 +35,14 @@ func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruc
 		faults, _ := api.StateMinerFaults(context.Background(), miner.Address, tipset)
 		count, _ := faults.Count()
 		log.Print(miner.Address.String(), "错误扇区数量为：", count)
-		if count > miner.FaultCount {
-			miner.FaultCount = count
-		}
-		if miner.FaultCount > 10 && miner.FaultCount > miner.LastCount {
-			SendEm(miner.Address.String(), []byte(miner.Address.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
-			miner.LastCount = miner.FaultCount
+
+		miner.FaultCount = count
+
+		if miner.FaultCount != miner.LastAlertCount {
+			if miner.FaultCount > 10 {
+				SendEm(miner.Address.String(), []byte(miner.Address.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
+			}
+			miner.LastAlertCount = miner.FaultCount
 		}
 	}
 }
