@@ -40,7 +40,12 @@ func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruc
 
 		if miner.FaultCount != miner.LastAlertCount {
 			if miner.FaultCount > 10 {
-				SendEm(miner.Address.String(), []byte(miner.Address.String()+"错误扇区数量为："+strconv.FormatUint(count, 10)))
+				if miner.FaultCount > miner.LastAlertCount {
+					SendEm(miner.Address.String(), []byte(miner.Address.String()+"掉算力了，错误扇区数量为："+strconv.FormatUint(count, 10)))
+				}
+				if miner.FaultCount < miner.LastAlertCount {
+					SendEm(miner.Address.String(), []byte(miner.Address.String()+"恢复中，错误扇区数量为："+strconv.FormatUint(count, 10)))
+				}
 			}
 			miner.LastAlertCount = miner.FaultCount
 		}
