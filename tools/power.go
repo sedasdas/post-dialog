@@ -7,7 +7,6 @@ import (
 	"github.com/filecoin-project/lotus/chain/types"
 	"log"
 	"strconv"
-	"sync"
 )
 
 type Miner struct {
@@ -67,17 +66,11 @@ func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruc
 			return err
 		}
 	}
-
-	var wg sync.WaitGroup
 	for _, miner := range miners {
-		wg.Add(1)
-		go func(m *Miner) {
-			defer wg.Done()
-			if err := checkMinerPower(ctx, m, api, tipset); err != nil {
-				log.Printf("检查矿工 %s 时出错: %v", m.Address.String(), err)
-			}
-		}(miner)
+
+		if err := checkMinerPower(ctx, miner, api, tipset); err != nil {
+			log.Printf("检查矿工 %s 时出错: %v", miner.Address.String(), err)
+		}
 	}
-	wg.Wait()
 	return nil
 }
