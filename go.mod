@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/filecoin-project/go-address v1.1.0
-	github.com/filecoin-project/go-jsonrpc v0.6.0
+	github.com/filecoin-project/go-jsonrpc v0.5.0
 	github.com/filecoin-project/lotus v1.28.3
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 )
