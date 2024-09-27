@@ -62,11 +62,13 @@ func main() {
 		api, closer, err = connectLotusAPI(addr, authToken)
 
 	}
-	log.Printf(home)
-	log.Printf("chain head: %d", tipset.Height())
-	//tools.SendEm("sds", []byte(("sd")))
-	tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
-	//tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
-	//tools.CheckNet()
-	time.Sleep(10 * time.Second)
+
+	for {
+		log.Printf("chain head: %d", tipset.Height())
+		//tools.SendEm("sds", []byte(("sd")))
+		tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
+		//tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
+		//tools.CheckNet()
+		time.Sleep(10 * time.Second)
+	}
 }
