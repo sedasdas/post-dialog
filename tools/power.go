@@ -6,6 +6,7 @@ import (
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/types"
 	"log"
+	"strconv"
 )
 
 type Miner struct {
@@ -47,11 +48,10 @@ func checkMinerPower(ctx context.Context, miner *Miner, api lotusapi.FullNodeStr
 	if miner.FaultCount != miner.LastAlertCount {
 		if miner.FaultCount > 10 {
 			if miner.FaultCount > miner.LastAlertCount {
-				SendEm("s", []byte("sds"))
-				//go SendEm(miner.Address.String(), []byte(miner.Address.String()+"掉算力了，错误扇区数量为："+strconv.FormatUint(count, 10)))
+				SendEm(miner.Address.String(), []byte(miner.Address.String()+"掉算力了，错误扇区数量为："+strconv.FormatUint(count, 10)))
 			}
 			if miner.FaultCount < miner.LastAlertCount {
-				//go SendEm(miner.Address.String(), []byte(miner.Address.String()+"恢复中，错误扇区数量为："+strconv.FormatUint(count, 10)))
+				SendEm(miner.Address.String(), []byte(miner.Address.String()+"恢复中，错误扇区数量为："+strconv.FormatUint(count, 10)))
 			}
 		}
 		miner.LastAlertCount = miner.FaultCount
