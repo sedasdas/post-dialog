@@ -53,7 +53,7 @@ func main() {
 	addr := os.Getenv("ADDR")
 
 	api, closer, _ := connectLotusAPI(addr, authToken)
-	//defer closer()
+	defer closer()
 
 	for {
 		tipset, err := api.ChainHead(context.Background())
@@ -65,8 +65,9 @@ func main() {
 		}
 		log.Printf(home)
 		log.Printf("chain head: %d", tipset.Height())
-		go tools.SendEm("s", []byte("s"))
+
 		go tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
+		go tools.SendEm("s", []byte("s"))
 		//tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
 		//tools.CheckNet()
 		time.Sleep(66 * time.Second)
