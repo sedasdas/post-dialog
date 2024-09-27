@@ -63,7 +63,7 @@ func main() {
 			api, closer, err = connectLotusAPI(addr, authToken)
 			continue
 		}
-
+		log.Printf(home)
 		log.Printf("chain head: %d", tipset.Height())
 		//tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
 		//tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
