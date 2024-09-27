@@ -2,12 +2,13 @@ package tools
 
 import (
 	"context"
+	"fmt"
 	"github.com/filecoin-project/go-address"
 	lotusapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/types"
-	"log"
-	"strconv"
-	"sync"
+	"golang.org/x/sync/errgroup"
+	_ "sync"
+	"time"
 )
 
 type Miner struct {
@@ -24,60 +25,100 @@ func initMiners(filename string) error {
 	for i, k := range minerlist {
 		maddr, err := address.NewFromString(string(k))
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse miner address: %w", err)
 		}
 		miners[i] = &Miner{Address: maddr}
 	}
 	return nil
 }
 
+func retryOperation(ctx context.Context, operation func() error) error {
+	backoff := time.Second
+	for i := 0; i < 3; i++ {
+		err := operation()
+		if err == nil {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(backoff):
+			backoff *= 2
+		}
+	}
+	return fmt.Errorf("operation failed after 3 retries")
+}
+
 func checkMinerPower(ctx context.Context, miner *Miner, api lotusapi.FullNodeStruct, tipset types.TipSetKey) error {
-	faults, err := api.StateMinerFaults(ctx, miner.Address, tipset)
+	//var faults types.BitField
+	var count uint64
+
+	err := retryOperation(ctx, func() error {
+		var err error
+		faults, err := api.StateMinerFaults(ctx, miner.Address, tipset)
+		if err != nil {
+			return fmt.Errorf("failed to get miner faults: %w", err)
+		}
+		count, err = faults.Count()
+		if err != nil {
+			return fmt.Errorf("failed to count faults: %w", err)
+		}
+		return nil
+	})
+
 	if err != nil {
-		log.Printf(err.Error())
 		return err
 	}
-	count, err := faults.Count()
-	if err != nil {
-		log.Printf(err.Error())
-		return err
-	}
-	log.Printf("%s 错误扇区数量为：%d", miner.Address.String(), count)
+
+	fmt.Printf("%s 错误扇区数量为：%d\n", miner.Address.String(), count)
 
 	miner.FaultCount = count
 
 	if miner.FaultCount != miner.LastAlertCount {
 		if miner.FaultCount > 10 {
+			message := fmt.Sprintf("%s", miner.Address.String())
 			if miner.FaultCount > miner.LastAlertCount {
-				SendEm(miner.Address.String(), []byte(miner.Address.String()+"掉算力了，错误扇区数量为："+strconv.FormatUint(count, 10)))
+				message += fmt.Sprintf("掉算力了，错误扇区数量为：%d", count)
+			} else {
+				message += fmt.Sprintf("恢复中，错误扇区数量为：%d", count)
 			}
-			if miner.FaultCount < miner.LastAlertCount {
-				SendEm(miner.Address.String(), []byte(miner.Address.String()+"恢复中，错误扇区数量为："+strconv.FormatUint(count, 10)))
-			}
+			SendEm(miner.Address.String(), []byte(message))
 		}
 		miner.LastAlertCount = miner.FaultCount
 	}
-	return err
+	return nil
 }
 
 func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruct, tipset types.TipSetKey) error {
 	if miners == nil {
 		if err := initMiners(filename); err != nil {
-			log.Printf(err.Error())
-			return err
+			return fmt.Errorf("failed to initialize miners: %w", err)
 		}
 	}
 
-	var wg sync.WaitGroup
+	g, ctx := errgroup.WithContext(ctx)
+	sem := make(chan struct{}, 10) // Limit concurrent goroutines
+
 	for _, miner := range miners {
-		wg.Add(1)
-		go func(m *Miner) {
-			defer wg.Done()
-			if err := checkMinerPower(ctx, m, api, tipset); err != nil {
-				log.Printf("检查矿工 %s 时出错: %v", m.Address.String(), err)
+		miner := miner // https://golang.org/doc/faq#closures_and_goroutines
+		g.Go(func() error {
+			select {
+			case sem <- struct{}{}:
+				defer func() { <-sem }()
+			case <-ctx.Done():
+				return ctx.Err()
 			}
-		}(miner)
+
+			if err := checkMinerPower(ctx, miner, api, tipset); err != nil {
+				return fmt.Errorf("failed to check miner %s power: %w", miner.Address.String(), err)
+			}
+			return nil
+		})
 	}
-	wg.Wait()
+
+	if err := g.Wait(); err != nil {
+		return fmt.Errorf("error occurred while checking miner power: %w", err)
+	}
+
 	return nil
 }
