@@ -57,7 +57,7 @@ func checkMinerPower(ctx context.Context, miner *Miner, api lotusapi.FullNodeStr
 		}
 		miner.LastAlertCount = miner.FaultCount
 	}
-	return nil
+	return err
 }
 
 func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruct, tipset types.TipSetKey) error {
