@@ -38,6 +38,7 @@ func checkMinerPower(ctx context.Context, miner *Miner, api lotusapi.FullNodeStr
 	}
 	count, err := faults.Count()
 	if err != nil {
+		log.Printf(err.Error())
 		return err
 	}
 	log.Printf("%s 错误扇区数量为：%d", miner.Address.String(), count)
