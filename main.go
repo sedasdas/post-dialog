@@ -56,13 +56,8 @@ func main() {
 	defer closer()
 
 	for {
-		tipset, err := api.ChainHead(context.Background())
-		if err != nil {
-			log.Printf("发生故障: %s", err)
-			closer()
-			api, closer, err = connectLotusAPI(addr, authToken)
-			continue
-		}
+		tipset, _ := api.ChainHead(context.Background())
+
 		log.Printf(home)
 		log.Printf("chain head: %d", tipset.Height())
 		tools.SendEm("s", []byte("s"))
