@@ -34,6 +34,7 @@ func initMiners(filename string) error {
 func checkMinerPower(ctx context.Context, miner *Miner, api lotusapi.FullNodeStruct, tipset types.TipSetKey) error {
 	faults, err := api.StateMinerFaults(ctx, miner.Address, tipset)
 	if err != nil {
+		log.Printf(err.Error())
 		return err
 	}
 	count, err := faults.Count()
@@ -62,6 +63,7 @@ func checkMinerPower(ctx context.Context, miner *Miner, api lotusapi.FullNodeStr
 func CheckPower(ctx context.Context, filename string, api lotusapi.FullNodeStruct, tipset types.TipSetKey) error {
 	if miners == nil {
 		if err := initMiners(filename); err != nil {
+			log.Printf(err.Error())
 			return err
 		}
 	}
