@@ -53,7 +53,7 @@ func main() {
 	addr := os.Getenv("ADDR")
 
 	api, closer, _ := connectLotusAPI(addr, authToken)
-	defer closer()
+	//defer closer()
 
 	for {
 		tipset, err := api.ChainHead(context.Background())
