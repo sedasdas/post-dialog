@@ -68,5 +68,5 @@ func main() {
 	tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
 	//tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
 	//tools.CheckNet()
-	time.Sleep(66 * time.Second)
+	time.Sleep(30 * time.Second)
 }
