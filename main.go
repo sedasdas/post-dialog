@@ -66,8 +66,8 @@ func main() {
 
 		log.Printf("chain head: %d", tipset.Height())
 		tools.CheckPower(context.Background(), home+"/miner-list", api, tipset.Key())
-		tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
-		tools.CheckNet()
+		//tools.GetWalletBalance(context.Background(), home+"/wallet-list", api)
+		//tools.CheckNet()
 		time.Sleep(30 * time.Second)
 	}
 }
